@@ -541,4 +541,9 @@ class TestSeBa(TestWithMPI):
         self.assertAlmostRelativeEquals(instance.particles.age, [60,60,30,30] |units.Myr)
         self.assertAlmostRelativeEquals(instance.particles[2].mass, 1.2263 | units.MSun, 4)
         self.assertAlmostRelativeEquals(instance.particles[3].mass, 8.8682 | units.MSun, 4)
-        
+
+    def test10(self):
+        instance = self.new_instance_of_an_optional_code(SeBa)
+        instance.initialize_code()
+
+        self.assertTrue(instance.stopping_conditions.supernova_detection.is_supported())

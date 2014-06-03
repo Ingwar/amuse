@@ -3,7 +3,7 @@ from amuse.datamodel import Particles
 from amuse.datamodel import ParticlesSubset
 from amuse.community.interface import se
 
-class SeBaInterface(CodeInterface, se.StellarEvolutionInterface, LiteratureReferencesMixIn):
+class SeBaInterface(CodeInterface, se.StellarEvolutionInterface, StoppingConditionInterface, LiteratureReferencesMixIn):
     
     """
     Stellar evolution is performed by the rapid single-star evolution
@@ -20,7 +20,7 @@ class SeBaInterface(CodeInterface, se.StellarEvolutionInterface, LiteratureRefer
         .. [#] ... "Supernova Type Ia progenitors from merging double white dwarfs. Using a new population synthesis model"
     """
 
-    include_headers = ['worker_code.h']
+    include_headers = ['stopcond.h', 'worker_code.h']
     
     def __init__(self, **options):
         CodeInterface.__init__(self, name_of_the_worker="seba_worker", **options)
@@ -365,6 +365,7 @@ class SeBaInterface(CodeInterface, se.StellarEvolutionInterface, LiteratureRefer
 class SeBa(se.StellarEvolution):
 
     def __init__(self, **options):
+        self.stopping_conditions = StoppingConditions(self)
         se.StellarEvolution.__init__(self,  SeBaInterface(**options), **options)
     
 

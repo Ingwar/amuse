@@ -6,6 +6,8 @@
 
 #include <map>
 
+#include <stopcond.h>
+
 static node * seba_root = 0;
 static node * seba_insertion_point = 0;
 static int next_seba_id = 1;
@@ -294,6 +296,9 @@ int initialize_code(){
     // it looks like this is important for
     // double stars!!
     seba_root->get_starbase()->set_use_hdyn(false); 
+
+    set_support_for_condition(SUPERNOVA_DETECTION);
+
     return 0;
 }
 
