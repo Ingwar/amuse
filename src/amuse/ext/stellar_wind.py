@@ -131,7 +131,8 @@ class SimpleWind(object):
     def initial_wind_velocity(self, stars):
         return stars.terminal_wind_velocity
 
-    def evolve_model(self, time):
+    def evolve_model(self, time, supernovae=None):
+        self.supernovae = supernovae
         if self.has_target():
             while self.system_time <= time:
                 self.particles.evolve_mass_loss(self.system_time)
@@ -203,13 +204,25 @@ class SimpleWind(object):
 
         wind=Particles(Ngas)
 
-        wind_velocity = self.initial_wind_velocity(star)
-        outer_wind_distance = wind_velocity * (self.system_time - star.wind_release_time)
+        if self.supernovae is not None and star in self.supernovae:
 
-        wind.position, direction = self.random_positions(Ngas, star.radius, outer_wind_distance)
-        wind.velocity = direction * wind_velocity
+            wind_velocity = (0.7 * (1e51 | units.erg) / star.lost_mass).sqrt()
+            wind.position, direction = self.random_positions(Ngas, 0.001 | units.parsec, 0.003 | units.parsec)
+            wind.velocity = direction * wind_velocity
 
-        wind.u = self.internal_energy_formula(star, wind)
+            wind.u = (3./2. * constants.kB * (7e3 | units.K) / star.mu) * 0.8
+
+            print 'burst'
+
+        else:
+
+            wind_velocity = self.initial_wind_velocity(star)
+            outer_wind_distance = wind_velocity * (self.system_time - star.wind_release_time)
+
+            wind.position, direction = self.random_positions(Ngas, star.radius, outer_wind_distance)
+            wind.velocity = direction * wind_velocity
+
+            wind.u = self.internal_energy_formula(star, wind)
 
         wind.mass = self.sph_particle_mass
 
